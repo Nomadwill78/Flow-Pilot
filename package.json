@@ -1,0 +1,48 @@
+{
+  "name": "flowpilot",
+  "version": "1.0.0",
+  "description": "White-label AI Copilot for web apps. Users type what they want in plain English; FlowPilot performs the actions on the page.",
+  "type": "module",
+  "main": "dist/flowpilot.umd.js",
+  "module": "dist/flowpilot.es.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "presets",
+    "README.md",
+    "QUICKSTART.md",
+    "test"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/flowpilot.es.js",
+      "require": "./dist/flowpilot.umd.js"
+    },
+    "./presets/*": "./presets/*"
+  },
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --declaration --outDir dist",
+    "dev": "vite build --watch",
+    "typecheck": "tsc --noEmit",
+    "demo": "npx serve demo",
+    "landing": "npx serve landing-page",
+    "server": "node server/index.js",
+    "test:smoke": "node test/smoke.mjs"
+  },
+  "keywords": [
+    "ai",
+    "copilot",
+    "agent",
+    "white-label",
+    "saas",
+    "dom-agent",
+    "assistant"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0",
+    "playwright": "^1.48.0"
+  }
+}

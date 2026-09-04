@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23003766%27/%3E%3Cpath d=%27M16 7v4M16 21v4M7 16h4M21 16h4%27 stroke=%27%23FFB300%27 stroke-width=%272.5%27 stroke-linecap=%27round%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%274%27 fill=%27none%27 stroke=%27%23FFB300%27 stroke-width=%272.5%27/%3E%3C/svg%3E" />
+<title>FlowPilot Demo — Northwind Admin</title>
+<meta name="description" content="Live interactive demo of FlowPilot, a white-label AI copilot that performs real actions inside a web app." />
+<style>
+  :root {
+    --navy: #003766;
+    --midnight: #00172C;
+    --white: #FFFFFF;
+    --gold: #FFB300;
+    --sand: #F4F1EA;
+    --border: #E3DED2;
+    --muted: #5B6B7B;
+    --ok: #1B7F5A;
+    --warn: #B25E00;
+    --danger: #C62828;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--sand);
+    color: var(--midnight);
+    font-size: 14px;
+  }
+  a { color: inherit; }
+
+  /* ── Demo chrome (not part of the product) ─────────────────────────── */
+  .demo-bar {
+    background: var(--midnight); color: #fff; padding: 10px 20px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    font-size: 12.5px;
+  }
+  .demo-bar strong { color: var(--gold); letter-spacing: .02em; }
+  .demo-bar .spacer { flex: 1; }
+  .demo-bar button {
+    background: var(--gold); color: var(--midnight); border: 0; border-radius: 7px;
+    padding: 6px 13px; font-weight: 650; font-size: 12px; cursor: pointer; font-family: inherit;
+  }
+  .demo-bar button.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3); }
+  .demo-hint { color: rgba(255,255,255,.72); }
+
+  /* ── The "customer's app" ───────────────────────────────────────────── */
+  .app { display: grid; grid-template-columns: 224px 1fr; min-height: calc(100vh - 41px); }
+  .sidebar { background: var(--navy); color: #fff; padding: 22px 0; }
+  .logo { padding: 0 22px 22px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; display: flex; align-items: center; gap: 9px; }
+  .logo-mark { width: 26px; height: 26px; border-radius: 7px; background: var(--gold); color: var(--midnight); display: grid; place-items: center; font-size: 13px; font-weight: 800; }
+  .nav { display: flex; flex-direction: column; }
+  .nav button {
+    background: transparent; border: 0; color: rgba(255,255,255,.82); text-align: left;
+    padding: 10px 22px; font-size: 13.5px; cursor: pointer; font-family: inherit;
+    border-left: 3px solid transparent;
+  }
+  .nav button:hover { background: rgba(255,255,255,.07); color: #fff; }
+  .nav button[aria-current="page"] { background: rgba(255,255,255,.11); color: #fff; border-left-color: var(--gold); font-weight: 600; }
+
+  .main { padding: 26px 30px 60px; overflow-x: auto; }
+  .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.02em; }
+  .sub { color: var(--muted); font-size: 13px; margin: 0; }
+
+  .btn {
+    border: 0; border-radius: 8px; padding: 9px 15px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .btn.primary { background: var(--navy); color: #fff; }
+  .btn.gold { background: var(--gold); color: var(--midnight); }
+  .btn.ghost { background: var(--white); color: var(--navy); border: 1px solid var(--border); }
+  .btn.danger { background: #fff; color: var(--danger); border: 1px solid #F0C4C4; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 22px; }
+  .kpi { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .kpi .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+  .kpi .value { font-size: 25px; font-weight: 700; margin: 7px 0 3px; letter-spacing: -.02em; }
+  .kpi .delta { font-size: 12px; font-weight: 600; }
+  .delta.up { color: var(--ok); }
+  .delta.down { color: var(--danger); }
+
+  .panel { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 22px; }
+  .panel-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .panel-head h2 { font-size: 15px; margin: 0; flex: 1; }
+  .filters { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+  label.field { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: var(--muted); font-weight: 600; }
+  select, input[type=text], input[type=email], textarea {
+    font-family: inherit; font-size: 13px; padding: 7px 10px; border: 1px solid var(--border);
+    border-radius: 7px; background: var(--white); color: var(--midnight); min-width: 150px;
+  }
+  select:focus, input:focus, textarea:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 18px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--sand); border-bottom: 1px solid var(--border); }
+  td { padding: 11px 18px; border-bottom: 1px solid #F0EDE6; }
+  tr:last-child td { border-bottom: 0; }
+  .pill { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+  .pill.shipped { background: #E6F4EE; color: var(--ok); }
+  .pill.refund { background: #FFF3E0; color: var(--warn); }
+  .pill.processing { background: #E8F0F8; color: var(--navy); }
+  .pill.cancelled { background: #FDECEC; color: var(--danger); }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; padding: 18px; }
+  .form-grid label.field { font-size: 12px; color: var(--midnight); }
+  .form-actions { padding: 0 18px 18px; display: flex; gap: 9px; }
+  [hidden] { display: none !important; }
+  .empty { padding: 30px 18px; text-align: center; color: var(--muted); font-size: 13px; }
+  .note { font-size: 12px; color: var(--muted); padding: 0 18px 16px; }
+</style>
+</head>
+<body>
+
+<!-- Demo chrome. Everything below the app boundary is the "customer's" app. -->
+<div class="demo-bar" data-fp-ignore>
+  <strong>FlowPilot Demo</strong>
+  <span class="demo-hint">This is a simulated admin app. Open the copilot and try: <em>"show me refund requests"</em></span>
+  <span class="spacer"></span>
+  <button id="openCopilot">Open copilot ⌘K</button>
+  <button class="ghost" id="liveToggle">Connect live AI</button>
+  <button class="ghost" id="resetDemo">Reset</button>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="logo-mark">N</span> Northwind</div>
+    <nav class="nav" aria-label="Main">
+      <button data-view="dashboard" aria-current="page">Dashboard</button>
+      <button data-view="orders">Orders</button>
+      <button data-view="customers">Customers</button>
+      <button data-view="settings">Settings</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <!-- Dashboard -->
+    <section id="view-dashboard">
+      <div class="page-head">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="sub">Performance overview for your store.</p>
+        </div>
+        <label class="field">Reporting period
+          <select id="periodSelect">
+            <option>This month</option>
+            <option>Last month</option>
+            <option>This quarter</option>
+            <option>Last quarter</option>
+            <option>Year to date</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="label">Revenue</div><div class="value" id="kpiRevenue">$92,480</div><div class="delta up">▲ 12.4% vs prior</div></div>
+        <div class="kpi"><div class="label">Orders</div><div class="value" id="kpiOrders">412</div><div class="delta up">▲ 8.1% vs prior</div></div>
+        <div class="kpi"><div class="label">Avg order value</div><div class="value" id="kpiAov">$224</div><div class="delta up">▲ 4.0% vs prior</div></div>
+        <div class="kpi"><div class="label">Open tickets</div><div class="value" id="kpiTickets">37</div><div class="delta down">▼ 3 unresolved &gt; 48h</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Recent activity</h2></div>
+        <table>
+          <thead><tr><th>When</th><th>Event</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>09:41</td><td>Refund requested</td><td>Order #1042 — $312.00</td></tr>
+            <tr><td>09:12</td><td>New customer</td><td>Harbor &amp; Co (Growth plan)</td></tr>
+            <tr><td>08:55</td><td>Order shipped</td><td>Order #1039 — tracking NW884213</td></tr>
+            <tr><td>08:30</td><td>Support ticket</td><td>"Where is my order?" — 14 similar today</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Orders -->
+    <section id="view-orders" hidden>
+      <div class="page-head">
+        <div>
+          <h1>Orders</h1>
+          <p class="sub">Every order across all channels.</p>
+        </div>
+        <button class="btn ghost">Export CSV</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>All orders</h2>
+          <div class="filters">
+            <label class="field">Status
+              <select id="statusFilter">
+                <option>All statuses</option>
+                <option>Shipped</option>
+                <option>Processing</option>
+                <option>Refund requested</option>
+                <option>Cancelled</option>
+              </select>
+            </label>
+            <label class="field">Channel
+              <select id="channelFilter">
+                <option>All channels</option>
+                <option>Web</option>
+                <option>Marketplace</option>
+                <option>Wholesale</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Channel</th><th>Total</th><th>Age</th></tr></thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+        <div class="empty" id="ordersEmpty" hidden>No orders match these filters.</div>
+      </div>
+    </section>
+
+    <!-- Customers -->
+    <section id="view-customers" hidden>
+      <div class="page-head">
+        <div>
+          <h1>Customers</h1>
+          <p class="sub">Accounts and contacts.</p>
+        </div>
+        <button class="btn gold" id="newCustomerBtn">New customer</button>
+      </div>
+
+      <div class="panel" id="customerForm" hidden>
+        <div class="panel-head"><h2>New customer</h2></div>
+        <div class="form-grid">
+          <label class="field">Full name<input type="text" id="custName" placeholder="Jane Doe" /></label>
+          <label class="field">Email<input type="email" id="custEmail" placeholder="jane@company.com" /></label>
+          <label class="field">Company<input type="text" id="custCompany" placeholder="Company Ltd" /></label>
+          <label class="field">Plan
+            <select id="custPlan">
+              <option>Starter</option><option>Growth</option><option>Enterprise</option>
+            </select>
+          </label>
+          <label class="field">Notes<textarea id="custNotes" rows="2" placeholder="Context from the call…"></textarea></label>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" data-fp-confirm id="saveCustomer">Save customer</button>
+          <button class="btn ghost" id="cancelCustomer">Cancel</button>
+        </div>
+        <p class="note">The Save button is marked <code>data-fp-confirm</code>, so the copilot must ask before pressing it.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>All customers</h2></div>
+        <table>
+          <thead><tr><th>Name</th><th>Company</th><th>Plan</th><th>Lifetime value</th></tr></thead>
+          <tbody id="customersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="view-settings" hidden>
+      <div class="page-head">
+        <div>
+          <h1>Settings</h1>
+          <p class="sub">Workspace configuration.</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Danger zone</h2></div>
+        <div class="form-grid">
+          <div>
+            <p style="margin:0 0 10px;font-size:13px;">Permanently delete this workspace and all of its data.</p>
+            <button class="btn danger" data-fp-block id="deleteWorkspace">Delete workspace</button>
+          </div>
+        </div>
+        <p class="note">This button carries <code>data-fp-block</code>. The copilot cannot press it under any instruction — try asking it to.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="./vendor/flowpilot.umd.js"></script>
+<script src="./mock-model.js"></script>
+<script>
+// ─── The simulated app's own behaviour ──────────────────────────────────────
+const ORDERS = [
+  { id: '#1042', customer: 'Marcus Reed',    status: 'Refund requested', channel: 'Web',         total: '$312.00', age: '6 days' },
+  { id: '#1041', customer: 'Harbor & Co',    status: 'Processing',       channel: 'Wholesale',   total: '$1,840.00', age: '1 day' },
+  { id: '#1040', customer: 'Ines Okafor',    status: 'Refund requested', channel: 'Marketplace', total: '$624.00', age: '3 days' },
+  { id: '#1039', customer: 'Tomas Lindqvist',status: 'Shipped',          channel: 'Web',         total: '$189.00', age: '2 days' },
+  { id: '#1038', customer: 'Priya Raman',    status: 'Shipped',          channel: 'Web',         total: '$412.00', age: '4 days' },
+  { id: '#1037', customer: 'Delta Foods',    status: 'Refund requested', channel: 'Wholesale',   total: '$348.00', age: '5 days' },
+  { id: '#1036', customer: 'Kenji Sato',     status: 'Cancelled',        channel: 'Marketplace', total: '$97.00',  age: '8 days' },
+  { id: '#1035', customer: 'Aurora Design',  status: 'Shipped',          channel: 'Web',         total: '$1,120.00', age: '9 days' },
+];
+
+const CUSTOMERS = [
+  { name: 'Marcus Reed', company: 'Reed Studio', plan: 'Starter', ltv: '$1,240' },
+  { name: 'Harbor & Co', company: 'Harbor & Co', plan: 'Growth', ltv: '$18,400' },
+  { name: 'Priya Raman', company: 'Raman Retail', plan: 'Growth', ltv: '$9,120' },
+  { name: 'Delta Foods', company: 'Delta Foods', plan: 'Enterprise', ltv: '$64,800' },
+];
+
+const PERIODS = {
+  'This month':   { revenue: '$92,480',  orders: '412',   aov: '$224' },
+  'Last month':   { revenue: '$81,240',  orders: '377',   aov: '$215' },
+  'This quarter': { revenue: '$241,900', orders: '1,086', aov: '$223' },
+  'Last quarter': { revenue: '$284,910', orders: '1,247', aov: '$228' },
+  'Year to date': { revenue: '$1,042,660', orders: '4,689', aov: '$222' },
+};
+
+const pillClass = (status) => ({
+  'Shipped': 'shipped', 'Processing': 'processing',
+  'Refund requested': 'refund', 'Cancelled': 'cancelled',
+}[status] || 'processing');
+
+function renderOrders() {
+  const status = document.getElementById('statusFilter').value;
+  const channel = document.getElementById('channelFilter').value;
+  const rows = ORDERS.filter(
+    (o) => (status === 'All statuses' || o.status === status) &&
+           (channel === 'All channels' || o.channel === channel),
+  );
+
+  document.getElementById('ordersBody').innerHTML = rows.map((o) => `
+    <tr>
+      <td><strong>${o.id}</strong></td>
+      <td>${o.customer}</td>
+      <td><span class="pill ${pillClass(o.status)}">${o.status}</span></td>
+      <td>${o.channel}</td>
+      <td>${o.total}</td>
+      <td>${o.age}</td>
+    </tr>`).join('');
+
+  document.getElementById('ordersEmpty').hidden = rows.length > 0;
+}
+
+function renderCustomers() {
+  document.getElementById('customersBody').innerHTML = CUSTOMERS.map((c) => `
+    <tr><td><strong>${c.name}</strong></td><td>${c.company}</td><td>${c.plan}</td><td>${c.ltv}</td></tr>
+  `).join('');
+}
+
+function showView(name) {
+  for (const view of ['dashboard', 'orders', 'customers', 'settings']) {
+    document.getElementById(`view-${view}`).hidden = view !== name;
+  }
+  document.querySelectorAll('.nav button').forEach((b) => {
+    if (b.dataset.view === name) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+}
+
+document.querySelectorAll('.nav button').forEach((b) =>
+  b.addEventListener('click', () => showView(b.dataset.view)),
+);
+
+document.getElementById('statusFilter').addEventListener('change', renderOrders);
+document.getElementById('channelFilter').addEventListener('change', renderOrders);
+
+document.getElementById('periodSelect').addEventListener('change', (e) => {
+  const data = PERIODS[e.target.value];
+  if (!data) return;
+  document.getElementById('kpiRevenue').textContent = data.revenue;
+  document.getElementById('kpiOrders').textContent = data.orders;
+  document.getElementById('kpiAov').textContent = data.aov;
+});
+
+document.getElementById('newCustomerBtn').addEventListener('click', () => {
+  showView('customers');
+  document.getElementById('customerForm').hidden = false;
+});
+document.getElementById('cancelCustomer').addEventListener('click', () => {
+  document.getElementById('customerForm').hidden = true;
+});
+document.getElementById('saveCustomer').addEventListener('click', () => {
+  const name = document.getElementById('custName').value.trim();
+  const company = document.getElementById('custCompany').value.trim();
+  const plan = document.getElementById('custPlan').value;
+  if (!name) return alert('Name is required.');
+  CUSTOMERS.unshift({ name, company: company || '—', plan, ltv: '$0' });
+  renderCustomers();
+  document.getElementById('customerForm').hidden = true;
+  ['custName', 'custEmail', 'custCompany', 'custNotes'].forEach((id) => {
+    document.getElementById(id).value = '';
+  });
+});
+document.getElementById('deleteWorkspace').addEventListener('click', () => {
+  alert('A human pressed this. The copilot cannot — it is marked data-fp-block.');
+});
+
+renderOrders();
+renderCustomers();
+
+// ─── FlowPilot: the four lines a customer actually writes ───────────────────
+let copilot = new FlowPilot.FlowPilot({
+  endpoint: '/__demo__/agent',          // intercepted by mock-model.js in the demo
+  brandName: 'Northwind Copilot',
+  preset: 'dashboard-reports',
+  context: { role: 'admin', plan: 'Enterprise', app: 'Northwind Admin' },
+  onEvent: (event) => console.debug('[copilot]', event.type, event.data ?? ''),
+});
+
+// ─── Demo controls (not part of the product) ────────────────────────────────
+document.getElementById('openCopilot').addEventListener('click', () => copilot.open());
+document.getElementById('resetDemo').addEventListener('click', () => location.reload());
+
+document.getElementById('liveToggle').addEventListener('click', () => {
+  const endpoint = prompt(
+    'Point the copilot at your live FlowPilot proxy:\n\n' +
+    'e.g. https://copilot.yourcompany.com/api/agent',
+    'http://localhost:8787/api/agent',
+  );
+  if (!endpoint) return;
+  const token = prompt('Auth token (leave blank if AUTH_MODE=none):', '') || undefined;
+
+  copilot.destroy();
+  copilot = new FlowPilot.FlowPilot({
+    endpoint,
+    token,
+    brandName: 'Northwind Copilot (live)',
+    preset: 'dashboard-reports',
+    autoOpen: true,
+    debug: true,
+    context: { role: 'admin', plan: 'Enterprise', app: 'Northwind Admin' },
+  });
+});
+</script>
+</body>
+</html>
