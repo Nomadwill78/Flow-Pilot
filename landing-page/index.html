@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FlowPilot — The AI Copilot You Can Put Inside Any Web App</title>
+<meta name="description" content="FlowPilot is a white-label AI copilot that performs real actions inside your web app. Users say what they want; it clicks, types and navigates for them. Ships in a day." />
+<meta property="og:title" content="FlowPilot — The AI Copilot You Can Put Inside Any Web App" />
+<meta property="og:description" content="Your users say what they want. FlowPilot does it — inside your app, in their own session." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23003766%27/%3E%3Cpath d=%27M16 7v4M16 21v4M7 16h4M21 16h4%27 stroke=%27%23FFB300%27 stroke-width=%272.5%27 stroke-linecap=%27round%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%274%27 fill=%27none%27 stroke=%27%23FFB300%27 stroke-width=%272.5%27/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #003766;
+    --midnight: #00172C;
+    --white: #FFFFFF;
+    --gold: #FFB300;
+    --sand: #F4F1EA;
+    --border: #E3DED2;
+    --muted: #5B6B7B;
+    --maxw: 1120px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--white); color: var(--midnight);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { letter-spacing: -0.025em; line-height: 1.15; margin: 0; }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.5rem); font-weight: 800; }
+  h2 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 750; }
+  h3 { font-size: 1.08rem; font-weight: 650; }
+  p { margin: 0; }
+  a { color: var(--navy); }
+
+  .btn {
+    display: inline-block; border: 0; border-radius: 10px; padding: 14px 26px;
+    font-size: 15px; font-weight: 650; cursor: pointer; text-decoration: none;
+    font-family: inherit; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-gold { background: var(--gold); color: var(--midnight); box-shadow: 0 8px 22px -8px rgba(255,179,0,.7); }
+  .btn-navy { background: var(--navy); color: #fff; }
+  .btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.45); }
+  .btn-outline-navy { background: transparent; color: var(--navy); border: 1.5px solid var(--border); }
+
+  /* ── Nav ─────────────────────────────────────────────────────────── */
+  header {
+    position: sticky; top: 0; z-index: 50; background: rgba(0,23,44,.92);
+    backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; max-width: var(--maxw); margin: 0 auto; gap: 20px; }
+  .brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 750; font-size: 17px; text-decoration: none; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--gold); display: grid; place-items: center; }
+  .nav-links { display: flex; gap: 26px; align-items: center; }
+  .nav-links a { color: rgba(255,255,255,.8); text-decoration: none; font-size: 14.5px; font-weight: 500; }
+  .nav-links a:hover { color: #fff; }
+  .nav .btn { padding: 9px 18px; font-size: 14px; }
+  @media (max-width: 860px) { .nav-links { display: none; } }
+
+  /* ── Hero ────────────────────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(160deg, var(--navy) 0%, var(--midnight) 100%);
+    color: #fff; padding: 84px 0 96px; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ''; position: absolute; width: 620px; height: 620px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,179,0,.16), transparent 68%);
+    top: -220px; right: -160px; pointer-events: none;
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; background: rgba(255,179,0,.14);
+    border: 1px solid rgba(255,179,0,.34); color: var(--gold);
+    padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 650;
+    letter-spacing: .04em; text-transform: uppercase; margin-bottom: 22px;
+  }
+  .hero h1 { max-width: 17ch; }
+  .hero h1 em { font-style: normal; color: var(--gold); }
+  .hero-sub { font-size: clamp(1.02rem, 2vw, 1.2rem); color: rgba(255,255,255,.8); max-width: 56ch; margin: 22px 0 34px; }
+  .hero-cta { display: flex; gap: 13px; flex-wrap: wrap; margin-bottom: 20px; }
+  .hero-note { font-size: 13.5px; color: rgba(255,255,255,.55); }
+
+  .terminal {
+    margin-top: 52px; background: rgba(0,0,0,.34); border: 1px solid rgba(255,255,255,.13);
+    border-radius: 14px; overflow: hidden; max-width: 660px;
+  }
+  .terminal-bar { display: flex; gap: 6px; padding: 11px 14px; background: rgba(255,255,255,.06); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .terminal pre {
+    margin: 0; padding: 18px 20px; font-size: 13px; line-height: 1.75; overflow-x: auto;
+    font-family: 'SF Mono', Menlo, Consolas, monospace; color: #DDE7F0;
+  }
+  .tk { color: #9EC5FF; } .ts { color: #FFD98A; } .tc { color: #7E93A8; }
+
+  /* ── Sections ────────────────────────────────────────────────────── */
+  section { padding: 84px 0; }
+  .sand { background: var(--sand); }
+  .section-head { max-width: 660px; margin-bottom: 46px; }
+  .section-head p { color: var(--muted); font-size: 17px; margin-top: 14px; }
+  .label {
+    font-size: 12.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--navy); opacity: .72; margin-bottom: 12px;
+  }
+
+  .grid { display: grid; gap: 22px; }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+  .card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+    padding: 26px; height: 100%;
+  }
+  .sand .card { background: var(--white); }
+  .card .ico {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--sand);
+    display: grid; place-items: center; margin-bottom: 15px; color: var(--navy);
+  }
+  .card p { color: var(--muted); font-size: 14.5px; margin-top: 8px; }
+
+  /* Pain/gain table */
+  .compare { width: 100%; border-collapse: collapse; background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+  .compare th { background: var(--navy); color: #fff; text-align: left; padding: 15px 20px; font-size: 13px; letter-spacing: .05em; text-transform: uppercase; font-weight: 650; }
+  .compare td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14.8px; vertical-align: top; }
+  .compare tr:last-child td { border-bottom: 0; }
+  .compare td:first-child { color: var(--muted); width: 46%; }
+  .compare td:last-child { font-weight: 550; }
+  .table-scroll { overflow-x: auto; }
+
+  /* Steps */
+  .steps { counter-reset: step; display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .step { position: relative; padding-top: 52px; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; top: 0; left: 0; width: 38px; height: 38px; border-radius: 10px;
+    background: var(--navy); color: var(--gold); display: grid; place-items: center;
+    font-weight: 750; font-size: 16px;
+  }
+  .step p { color: var(--muted); font-size: 14.5px; margin-top: 7px; }
+
+  /* Pricing */
+  .pricing { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); align-items: stretch; }
+  .plan {
+    background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 30px 26px;
+    display: flex; flex-direction: column;
+  }
+  .plan.featured { border: 2px solid var(--gold); box-shadow: 0 20px 50px -22px rgba(0,55,102,.4); position: relative; }
+  .plan.featured::before {
+    content: 'Most popular'; position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--gold); color: var(--midnight); font-size: 11.5px; font-weight: 750;
+    padding: 5px 15px; border-radius: 999px; letter-spacing: .04em; white-space: nowrap;
+  }
+  .plan .name { font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--navy); }
+  .plan .price { font-size: 2.6rem; font-weight: 800; letter-spacing: -.03em; margin: 14px 0 2px; }
+  .plan .price span { font-size: 1rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+  .plan .who { color: var(--muted); font-size: 14px; min-height: 42px; margin-bottom: 18px; }
+  .plan ul { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 10px; }
+  .plan li { font-size: 14.5px; padding-left: 26px; position: relative; }
+  .plan li::before {
+    content: '✓'; position: absolute; left: 0; top: 0; color: var(--navy);
+    font-weight: 800; font-size: 13px;
+  }
+  .plan .btn { margin-top: auto; text-align: center; }
+
+  /* FAQ */
+  details {
+    background: #fff; border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; margin-bottom: 12px;
+  }
+  details[open] { border-color: var(--navy); }
+  summary { cursor: pointer; font-weight: 650; font-size: 15.5px; list-style: none; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; font-size: 22px; color: var(--navy); font-weight: 400; flex: none; }
+  details[open] summary::after { content: '−'; }
+  details p { color: var(--muted); font-size: 14.8px; margin-top: 12px; }
+
+  /* CTA + footer */
+  .cta { background: linear-gradient(160deg, var(--navy), var(--midnight)); color: #fff; text-align: center; }
+  .cta p { color: rgba(255,255,255,.78); max-width: 54ch; margin: 18px auto 30px; font-size: 17px; }
+  .cta .btn-row { display: flex; gap: 13px; justify-content: center; flex-wrap: wrap; }
+  footer { background: var(--midnight); color: rgba(255,255,255,.55); padding: 34px 0; font-size: 13.5px; }
+  .foot { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; align-items: center; }
+  footer a { color: rgba(255,255,255,.72); text-decoration: none; }
+  footer a:hover { color: #fff; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; margin-top: 44px; }
+  .stat { border-left: 3px solid var(--gold); padding-left: 16px; }
+  .stat .n { font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; }
+  .stat .t { font-size: 13.5px; color: rgba(255,255,255,.66); }
+  .sand .stat .t, .white .stat .t { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#00172C" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/><circle cx="12" cy="12" r="3.4"/></svg>
+      </span>
+      FlowPilot
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn-gold" href="#demo">See the demo</a>
+  </nav>
+</header>
+
+<div class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow">White-label AI copilot</span>
+    <h1>Your users say what they want. <em>FlowPilot does it.</em></h1>
+    <p class="hero-sub">
+      Most AI assistants talk. FlowPilot acts — clicking, typing and navigating inside your
+      web app, in the user's own logged-in session. Drop it in with four lines of code and
+      ship an AI copilot this week instead of next quarter.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" href="#demo">Try the live demo</a>
+      <a class="btn btn-outline" href="#pricing">See pricing</a>
+    </div>
+    <p class="hero-note">No rewrite. No headless browsers. Works with any OpenAI-compatible model.</p>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="dot" style="background:#FF5F57"></span>
+        <span class="dot" style="background:#FEBC2E"></span>
+        <span class="dot" style="background:#28C840"></span>
+      </div>
+<pre><span class="tc">// The entire integration.</span>
+<span class="tk">import</span> { FlowPilot } <span class="tk">from</span> <span class="ts">'flowpilot'</span>;
+
+<span class="tk">new</span> FlowPilot({
+  endpoint: <span class="ts">'/api/copilot'</span>,        <span class="tc">// your proxy — keys stay server-side</span>
+  brandName: <span class="ts">'Acme Assistant'</span>,
+  preset: <span class="ts">'crm-data-entry'</span>,       <span class="tc">// or bring your own workflow</span>
+});</pre>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="n">~13 KB</div><div class="t">Gzipped, zero runtime dependencies</div></div>
+      <div class="stat"><div class="n">1 day</div><div class="t">Typical time to first working copilot</div></div>
+      <div class="stat"><div class="n">5</div><div class="t">Business workflows included</div></div>
+      <div class="stat"><div class="n">Any</div><div class="t">OpenAI-compatible model, incl. on-prem</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Problem → solution -->
+<section class="sand">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label">Why teams buy it</div>
+      <h2>You already know which four complaints this fixes</h2>
+      <p>Every one of these is a line item someone is already paying for — in support headcount, in churn, or in a roadmap slot that keeps slipping.</p>
+    </div>
+    <div class="table-scroll">
+      <table class="compare">
+        <thead><tr><th>What you hear today</th><th>What FlowPilot does about it</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>"Users can't figure out our dashboard."</td>
+            <td>They describe the view they want in plain English; the copilot sets the filters for them.</td>
+          </tr>
+          <tr>
+            <td>"Support tickets are eating the team alive."</td>
+            <td>"How do I…" questions get answered <em>and performed</em>, in-app, before they become a ticket.</td>
+          </tr>
+          <tr>
+            <td>"Our internal tool is unusable but we can't rewrite it."</td>
+            <td>FlowPilot layers on top of the DOM you already have. No refactor, no migration.</td>
+          </tr>
+          <tr>
+            <td>"We need an AI story and we needed it last quarter."</td>
+            <td>A branded, working copilot in your product in days — not a six-month build.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label">How it works</div>
+      <h2>Four steps, running entirely in the user's own session</h2>
+      <p>FlowPilot reads the page as structured text rather than screenshots. That makes it fast, cheap, and accurate on the dense B2B interfaces where vision models struggle most.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Read the page</h3>
+        <p>Every visible control is captured with its accessible label and a stable reference — no screenshots, no vision tokens.</p>
+      </div>
+      <div class="step">
+        <h3>Ask the model</h3>
+        <p>Your proxy adds the workflow prompt and calls your LLM. The API key never leaves your server.</p>
+      </div>
+      <div class="step">
+        <h3>Check the guardrails</h3>
+        <p>Every proposed action is validated against your policy before it touches the DOM. Protected controls are refused outright.</p>
+      </div>
+      <div class="step">
+        <h3>Perform the action</h3>
+        <p>Native browser events drive React, Vue and Angular correctly — then the loop repeats against the updated page.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Demo -->
+<section class="sand" id="demo">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label">Live demo</div>
+      <h2>Watch it drive a real admin dashboard</h2>
+      <p>The demo is a working admin app with FlowPilot embedded. Ask it for refund requests and watch the table actually filter. Then ask it to delete the workspace and watch the guardrail refuse.</p>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Try these three prompts</h3>
+        <p style="margin-top:14px">
+          <strong>1.</strong> "Show me refund requests" — it navigates and filters.<br>
+          <strong>2.</strong> "Add a new customer from this note" — it fills the form, then stops and asks before saving.<br>
+          <strong>3.</strong> "Delete the workspace" — the guardrail blocks it, visibly.
+        </p>
+        <p style="margin-top:18px">
+          <a class="btn btn-navy" href="../demo/index.html">Open the demo →</a>
+        </p>
+      </div>
+      <div class="card">
+        <h3>What the demo proves on a sales call</h3>
+        <p style="margin-top:14px">
+          That the copilot performs <em>real</em> actions, not scripted animations — the DOM genuinely
+          changes. That it stops before irreversible steps. And that a hard-blocked control stays
+          blocked no matter how the user phrases the request. Those three moments close deals.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label">What's in the box</div>
+      <h2>Everything needed to ship it, not just a prototype</h2>
+    </div>
+    <div class="grid g3">
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 3 7v6c0 5 3.8 8.5 9 9 5.2-.5 9-4 9-9V7l-9-5Z"/></svg></div>
+        <h3>Keys never reach the browser</h3>
+        <p>A production Node proxy handles auth, per-user rate limits and structured usage logging. It refuses to boot with unsafe production settings.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6v6H9z"/></svg></div>
+        <h3>Guardrails you control</h3>
+        <p>Mark a control <code>data-fp-block</code> and the copilot can never touch it. Mark it <code>data-fp-confirm</code> and it must ask first. Enforced in the browser and again on the server.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Five business workflows</h3>
+        <p>E-commerce support, CRM data entry, analytics reporting, form onboarding and accessibility navigation — each a tuned prompt plus its own safety policy.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M8 20h8"/></svg></div>
+        <h3>Genuinely white-label</h3>
+        <p>Your colours, your name, your logo, your domain. The widget renders in a Shadow DOM, so your CSS and its CSS can never collide.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg></div>
+        <h3>Any model, including on-prem</h3>
+        <p>Anthropic, OpenAI, Google, Groq, DashScope, or a local model behind your firewall. Switching provider is an environment variable.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg></div>
+        <h3>Usage data from day one</h3>
+        <p>One structured JSON line per turn — user, workflow, actions, latency. That is your billing feed and your "look what it deflected" slide.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="sand" id="pricing">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label">Pricing</div>
+      <h2>Three ways to buy it</h2>
+      <p>Subscribe for speed, license it to make it yours, or have us build the workflows around your product.</p>
+    </div>
+    <div class="pricing">
+      <div class="plan">
+        <div class="name">Starter</div>
+        <div class="price">$49<span>/mo</span></div>
+        <div class="who">For a single product with a focused use case.</div>
+        <ul>
+          <li>Up to 1,000 monthly active users</li>
+          <li>2 workflow presets</li>
+          <li>Your branding and colours</li>
+          <li>Hosted proxy or self-host</li>
+          <li>Email support</li>
+        </ul>
+        <a class="btn btn-outline-navy" href="#contact">Start free trial</a>
+      </div>
+      <div class="plan featured">
+        <div class="name">Business</div>
+        <div class="price">$149<span>/mo</span></div>
+        <div class="who">For teams replacing real support volume.</div>
+        <ul>
+          <li>Up to 10,000 monthly active users</li>
+          <li>All 5 workflow presets</li>
+          <li>Custom workflows</li>
+          <li>Usage analytics and audit log</li>
+          <li>Priority support, onboarding call</li>
+        </ul>
+        <a class="btn btn-gold" href="#contact">Start free trial</a>
+      </div>
+      <div class="plan">
+        <div class="name">Enterprise</div>
+        <div class="price">Custom</div>
+        <div class="who">For regulated, on-prem or high-volume deployments.</div>
+        <ul>
+          <li>Unlimited users</li>
+          <li>Full white-label rights</li>
+          <li>On-premise or VPC deployment</li>
+          <li>SSO, audit export, DPA</li>
+          <li>Named engineer, SLA</li>
+        </ul>
+        <a class="btn btn-outline-navy" href="#contact">Talk to us</a>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:32px">
+      <div class="card">
+        <h3>White-label license</h3>
+        <p>A one-off license from <strong>$5,000–$15,000</strong> plus 20% annual maintenance. You get the source, your name on it, and the right to resell it to your own customers. Built for agencies and vertical SaaS.</p>
+      </div>
+      <div class="card">
+        <h3>Implementation services</h3>
+        <p><strong>$10,000–$50,000</strong> per engagement. We build the workflows around your product, integrate with your auth, tune the prompts against your real screens, and train your team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="label">FAQ</div>
+      <h2>The questions buyers actually ask</h2>
+    </div>
+    <div style="max-width:800px">
+      <details open>
+        <summary>Can it do something destructive by mistake?</summary>
+        <p>Not to anything you protect. Any control marked <code>data-fp-block</code> is refused outright, and controls marked <code>data-fp-confirm</code> — including every submit button by default — require the user to approve in the chat panel first. Password and payment fields are refused at the library level regardless of configuration, and every check runs again on the server.</p>
+      </details>
+      <details>
+        <summary>What if the page tries to manipulate the AI?</summary>
+        <p>Page content is wrapped in explicit untrusted-content markers and the system prompt instructs the model to ignore instructions found there. More importantly, the guardrails do not consult the model at all: a blocked control stays blocked even if the model is fully convinced it should click it.</p>
+      </details>
+      <details>
+        <summary>Does it need access to our backend or database?</summary>
+        <p>No. It runs in the browser and can only do what the signed-in user could already do by clicking. That is usually the fastest path through a security review — there is no new data path and no new set of credentials.</p>
+      </details>
+      <details>
+        <summary>Which AI model does it use?</summary>
+        <p>Whichever you choose. The proxy speaks both the Anthropic Messages API and the OpenAI Chat Completions shape, which covers OpenAI, Google, Groq, Together, OpenRouter, Alibaba DashScope, and local models via Ollama or vLLM. Changing provider is an environment variable, not a code change.</p>
+      </details>
+      <details>
+        <summary>How long does integration actually take?</summary>
+        <p>The widget itself is four lines. A realistic first deployment — proxy deployed, auth wired to your existing sessions, one workflow tuned to your screens — is a day for a competent front-end developer. Adding accessible labels to unlabelled buttons is usually the only real work, and it improves your accessibility score anyway.</p>
+      </details>
+      <details>
+        <summary>What does it cost to run?</summary>
+        <p>Because FlowPilot sends structured text instead of screenshots, a typical turn is a few thousand tokens rather than the tens of thousands a vision-based agent needs. You control the ceiling directly through per-user rate limits and the maximum steps per request.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="contact">
+  <div class="wrap">
+    <h2>Put an AI copilot in your product this week</h2>
+    <p>Start with the live demo. If it does what your users keep asking for, we can have it running in your staging environment in a day.</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="../demo/index.html">Open the live demo</a>
+      <a class="btn btn-outline" href="mailto:hello@example.com?subject=FlowPilot%20pilot">Book a pilot</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>© <span id="year">2026</span> FlowPilot. All rights reserved.</div>
+    <div style="display:flex;gap:22px;flex-wrap:wrap">
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="../demo/index.html">Demo</a>
+      <a href="mailto:hello@example.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
