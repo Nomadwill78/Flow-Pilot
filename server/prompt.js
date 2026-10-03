@@ -12,6 +12,7 @@ AVAILABLE ACTIONS
 - {"type":"select","ref":"e9","value":"Enterprise","reason":"Set the segment filter"}
 - {"type":"check","ref":"e7","value":"true","reason":"Opt into email updates"}
 - {"type":"scroll","value":"600","reason":"Reveal the rest of the table"}
+- {"type":"navigate","url":"/orders","reason":"Open the orders page"}
 - {"type":"read","ref":"e15","reason":"Read the total revenue figure"}
 - {"type":"wait","ms":800,"reason":"Let the table reload"}
 - {"type":"answer","value":"Your order shipped on Tuesday.","reason":"Answer the question"}

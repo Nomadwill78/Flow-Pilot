@@ -16,6 +16,7 @@
  * CHROME_PATH if Playwright cannot find a browser.
  */
 import { chromium } from 'playwright';
+import { readFile } from 'node:fs/promises';
 
 const BASE = process.env.FLOWPILOT_TEST_URL ?? 'http://localhost:3000/demo/index.html';
 
@@ -34,6 +35,12 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+
+// Exercise the current source build, not the checked-in demo bundle.
+const builtBundle = await readFile(new URL('../dist/flowpilot.umd.js', import.meta.url));
+await page.route('**/vendor/flowpilot.umd.js', (route) =>
+  route.fulfill({ status: 200, contentType: 'application/javascript', body: builtBundle }),
+);
 
 await page.goto(BASE, { waitUntil: 'networkidle' });
 
@@ -97,6 +104,34 @@ const blocked = await inShadow('.fp-step.blocked').allTextContents();
 console.log('✓ guardrail blocked:', JSON.stringify(blocked));
 const stillThere = await page.locator('#deleteWorkspace').count();
 console.log(`✓ workspace delete button untouched (count=${stillThere})`);
+
+// The accessibility preset opts into navigation. Same-origin destinations
+// must request user approval before navigation, while off-site ones are blocked.
+await page.evaluate(() => {
+  window.__flowpilotNavigationTest = new FlowPilot.FlowPilot({
+    endpoint: '/__demo__/agent',
+    preset: 'accessibility-navigator',
+    launcher: false,
+    hotkey: false,
+  });
+  void window.__flowpilotNavigationTest.ask('run the same-origin navigation smoke test');
+});
+const navigationWidget = page.locator('.flowpilot-root').nth(1);
+await navigationWidget.locator('.fp-confirm').waitFor({ timeout: 10000 });
+await navigationWidget.locator('.fp-confirm .fp-btn.primary').click();
+await page.waitForFunction(() => location.hash === '#flowpilot-navigation-check', { timeout: 10000 });
+console.log('✓ same-origin navigation requires confirmation and then succeeds');
+
+await navigationWidget.locator('.fp-typing').waitFor({ state: 'detached', timeout: 10000 });
+await page.evaluate(() => {
+  void window.__flowpilotNavigationTest.ask('run the off-site navigation smoke test');
+});
+const offsiteWidget = navigationWidget;
+await offsiteWidget.locator('.fp-step.blocked').waitFor({ timeout: 10000 });
+if (new URL(page.url()).origin !== new URL(BASE).origin) {
+  throw new Error('Off-site navigation escaped the current origin.');
+}
+console.log('✓ off-site navigation is blocked');
 
 if (process.argv[2]) await page.screenshot({ path: process.argv[2] });
 
