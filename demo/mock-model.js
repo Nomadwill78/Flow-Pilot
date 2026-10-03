@@ -115,6 +115,32 @@
         },
       ],
     },
+    {
+      match: /run the same-origin navigation smoke test/i,
+      turns: [
+        {
+          actions: () => [{
+            type: 'navigate',
+            url: `${window.location.pathname}#flowpilot-navigation-check`,
+            reason: 'Open the same page with a test marker',
+          }],
+          message: 'Opening the requested page after confirmation.',
+        },
+      ],
+    },
+    {
+      match: /run the off-site navigation smoke test/i,
+      turns: [
+        {
+          actions: () => [{
+            type: 'navigate',
+            url: 'https://example.com/',
+            reason: 'Attempt an off-site navigation for the safety test',
+          }],
+          message: 'Checking whether off-site navigation is blocked.',
+        },
+      ],
+    },
   ];
 
   const state = { script: null, turn: 0 };

@@ -10,7 +10,7 @@ import type { ActionType, AgentAction, GuardrailConfig, PerceivedElement } from 
  */
 
 export const defaultGuardrails: GuardrailConfig = {
-  allowedActions: ['click', 'type', 'select', 'check', 'scroll', 'read', 'answer', 'wait', 'done'],
+  allowedActions: ['click', 'type', 'select', 'check', 'scroll', 'navigate', 'read', 'answer', 'wait', 'done'],
   blockedSelectors: [
     '[data-fp-block]',
     '.flowpilot-root',
