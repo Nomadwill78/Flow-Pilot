@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  flowpilot-server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - LLM_PROVIDER=openai
+      - LLM_API_KEY=${LLM_API_KEY}
+      - CLIENT_API_KEYS=${CLIENT_API_KEYS}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    volumes:
+      - ../presets:/app/presets
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
