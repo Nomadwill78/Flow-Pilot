@@ -4,10 +4,6 @@
   "trailingSlash": true,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/landing-page/index.html"
-    },
-    {
       "source": "/demo/",
       "destination": "/demo/index.html"
     }
