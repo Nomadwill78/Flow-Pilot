@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Client intake — Muse + Cue Automation</title>
+  <meta name="description" content="Start your Muse + Cue automation engagement by sharing your business source folder and telling us what to automate first." />
+  <style>
+    :root { --ink:#00172c; --navy:#003766; --gold:#ffb300; --sand:#f4f1ea; --line:#d9e0e6; --muted:#5b6b7b; --green:#176b4d; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:#fff; font:16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color:var(--navy); }
+    .top { background:linear-gradient(145deg,var(--navy),var(--ink)); color:#fff; padding:20px 24px 72px; }
+    .nav, main { max-width:1040px; margin:0 auto; }
+    .nav { display:flex; justify-content:space-between; align-items:center; gap:24px; }
+    .brand { color:#fff; text-decoration:none; font-weight:800; letter-spacing:-.02em; }
+    .back { color:rgba(255,255,255,.78); text-decoration:none; font-size:14px; }
+    .hero { max-width:720px; margin:72px auto 0; }
+    .eyebrow { color:var(--gold); font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+    h1 { font-size:clamp(2.2rem,6vw,4rem); line-height:1.05; letter-spacing:-.05em; margin:14px 0 20px; }
+    .hero p { color:rgba(255,255,255,.78); font-size:18px; max-width:62ch; }
+    main { padding:52px 24px 84px; }
+    .layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr); gap:28px; align-items:start; }
+    .panel { border:1px solid var(--line); border-radius:18px; padding:30px; box-shadow:0 18px 50px rgba(0,23,44,.08); }
+    .panel h2 { margin:0 0 10px; font-size:24px; letter-spacing:-.03em; }
+    .panel > p { color:var(--muted); margin-top:0; }
+    .gate { border:2px solid var(--gold); background:#fffaf0; box-shadow:none; }
+    .gate h2 { font-size:20px; }
+    .step { display:grid; grid-template-columns:34px 1fr; gap:14px; padding:20px 0; border-top:1px solid var(--line); }
+    .step:first-of-type { border-top:0; padding-top:12px; }
+    .num { width:30px; height:30px; border-radius:50%; background:var(--navy); color:var(--gold); display:grid; place-items:center; font-weight:800; }
+    h3 { margin:0 0 5px; font-size:16px; }
+    .step p { margin:0; color:var(--muted); font-size:14px; }
+    .button { display:inline-flex; justify-content:center; align-items:center; gap:8px; border:0; border-radius:10px; padding:13px 18px; background:var(--navy); color:#fff; font:700 14px inherit; text-decoration:none; cursor:pointer; }
+    .button.gold { background:var(--gold); color:var(--ink); }
+    .button.secondary { background:#fff; color:var(--navy); border:1px solid var(--line); }
+    .button-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    label { display:block; font-weight:700; font-size:14px; margin:20px 0 7px; }
+    input, textarea, select { width:100%; border:1px solid #bdc8d2; border-radius:9px; padding:12px 13px; font:inherit; color:var(--ink); background:#fff; }
+    textarea { min-height:106px; resize:vertical; }
+    .hint { color:var(--muted); font-size:12.5px; margin-top:6px; }
+    .checks { display:grid; gap:10px; margin-top:12px; }
+    .check { display:flex; gap:10px; align-items:flex-start; font-size:14px; color:var(--muted); }
+    .check input { width:auto; margin-top:5px; accent-color:var(--navy); }
+    .notice { display:none; margin-top:18px; padding:14px; border-radius:10px; background:#eaf7f0; color:var(--green); font-size:14px; }
+    .notice.show { display:block; }
+    .small { font-size:13px; color:var(--muted); }
+    .folder { background:var(--sand); border-radius:12px; padding:16px; margin-top:16px; font:13px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; white-space:pre-line; }
+    footer { border-top:1px solid var(--line); padding:26px 24px; color:var(--muted); font-size:13px; }
+    @media (max-width:760px) { .layout { grid-template-columns:1fr; } .top { padding-bottom:52px; } .hero { margin-top:52px; } .panel { padding:22px; } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <nav class="nav" aria-label="Primary navigation">
+      <a class="brand" href="/landing-page/">FlowPilot / Nomad Consulting</a>
+      <a class="back" href="/landing-page/">Back to overview</a>
+    </nav>
+    <div class="hero">
+      <div class="eyebrow">Client intake · Muse + Cue automation</div>
+      <h1>Give the agents a clear place to start.</h1>
+      <p>We begin with your business context, not a blank automation canvas. Share one organized Google Drive folder, then tell us where marketing, outreach, and customer service are costing you the most time.</p>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout">
+      <section class="panel">
+        <h2>Step 1: create and share your business folder</h2>
+        <p>This folder is the source of truth for the engagement. Create it in your Google Drive, add the materials you already have, and share it with your Nomad Consulting contact as an Editor unless we agree otherwise.</p>
+        <div class="button-row">
+          <a class="button gold" href="https://drive.google.com/drive/my-drive" target="_blank" rel="noopener">Open Google Drive ↗</a>
+          <button class="button secondary" type="button" id="copyStructure">Copy folder structure</button>
+        </div>
+        <div class="folder" id="structure">01 Brand &amp; creative
+  logos, colors, fonts, photos, approved graphics
+
+02 Business context
+  business plan, offers, pricing, FAQs, policies
+
+03 Customers &amp; outreach
+  ideal customer notes, lead lists, past campaigns, testimonials
+
+04 Marketing
+  website copy, social posts, email campaigns, content calendar
+
+05 Customer service
+  support inbox exports, common questions, escalation rules
+
+06 Access &amp; systems (links only)
+  tools used, workflows, owners, setup notes — never passwords</div>
+        <p class="hint">Do not place passwords, API keys, payment-card data, Social Security numbers, or other secrets in the folder. Share links to systems or use an approved secure handoff instead.</p>
+
+        <div class="step"><div class="num">2</div><div><h3>Share the folder</h3><p>Share it with your Nomad Consulting contact and confirm that the link opens. If your organization requires restricted sharing, use the exact email address provided in your engagement email.</p></div></div>
+        <div class="step"><div class="num">3</div><div><h3>Complete the intake below</h3><p>Paste the folder link, identify your first automation priorities, and name the people who can approve messages and customer-facing actions.</p></div></div>
+        <div class="step"><div class="num">4</div><div><h3>We map the first workflow</h3><p>We review the folder, clarify gaps, and return a short automation map with the first Muse + Cue agent, guardrails, approvals, and success measures.</p></div></div>
+      </section>
+
+      <section class="panel gate">
+        <h2>Step 2: submit your intake</h2>
+        <p>Complete this after the Google Drive folder has been shared. This first version creates a copyable handoff in your browser; it does not upload files or transmit passwords.</p>
+        <form id="intakeForm">
+          <label for="name">Your name</label>
+          <input id="name" name="name" required autocomplete="name" />
+          <label for="business">Business name</label>
+          <input id="business" name="business" required autocomplete="organization" />
+          <label for="email">Best email</label>
+          <input id="email" name="email" type="email" required autocomplete="email" />
+          <label for="folder">Google Drive folder link</label>
+          <input id="folder" name="folder" type="url" placeholder="https://drive.google.com/drive/folders/..." required />
+          <div class="hint">Use the folder link, not a link to one individual file.</div>
+          <label for="priorities">What should we automate first?</label>
+          <textarea id="priorities" name="priorities" required placeholder="For example: weekly social content, lead follow-up, appointment questions, or support triage."></textarea>
+          <label for="systems">What tools do you use today?</label>
+          <textarea id="systems" name="systems" placeholder="Website, Gmail, Google Sheets, CRM, calendar, social platforms, help desk, etc."></textarea>
+          <label for="approver">Who approves outbound messages or customer-facing actions?</label>
+          <input id="approver" name="approver" required placeholder="Name and role" />
+          <div class="checks">
+            <label class="check"><input type="checkbox" name="shared" required /> <span>I created and shared the Google Drive folder before submitting this intake.</span></label>
+            <label class="check"><input type="checkbox" name="safe" required /> <span>I have not placed passwords, API keys, payment-card data, or other secrets in the folder.</span></label>
+          </div>
+          <div class="button-row"><button class="button gold" type="submit">Create my intake handoff</button></div>
+          <div class="notice" id="notice" role="status"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer><div class="nav"><span>FlowPilot / Nomad Consulting</span><span>Automation with human approval where it matters.</span></div></footer>
+  <script>
+    const structure = document.getElementById('structure').textContent;
+    document.getElementById('copyStructure').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(structure); document.getElementById('copyStructure').textContent = 'Copied'; }
+      catch { document.getElementById('copyStructure').textContent = 'Select and copy below'; }
+    });
+    document.getElementById('intakeForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(event.currentTarget).entries());
+      const handoff = [
+        'MUSE + CUE AUTOMATION INTAKE',
+        `Name: ${data.name}`,
+        `Business: ${data.business}`,
+        `Email: ${data.email}`,
+        `Google Drive folder: ${data.folder}`,
+        `First priorities: ${data.priorities}`,
+        `Current tools: ${data.systems || 'Not provided'}`,
+        `Approver: ${data.approver}`,
+        '',
+        'Folder shared: Yes',
+        'No secrets in folder: Yes'
+      ].join('\n');
+      navigator.clipboard?.writeText(handoff);
+      const notice = document.getElementById('notice');
+      notice.textContent = 'Your handoff is copied to your clipboard. Paste it into your engagement email or message, along with the shared Google Drive link.';
+      notice.classList.add('show');
+    });
+  </script>
+</body>
+</html>
